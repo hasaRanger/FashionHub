@@ -1,37 +1,64 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { CartItem as CartItemType, CartSummary } from '@/types';
 import CartItem from '@/components/CartItem';
+import BottomNav from '@/components/BottomNav';
 
 export default function CartPage() {
   const router = useRouter();
   const [items, setItems] = useState<CartItemType[]>([]);
   const [summary, setSummary] = useState<CartSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authToken, setAuthToken] = useState<string | null>(null);
 
-  async function fetchCart() {
-    const res = await fetch('/api/cart');
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      router.push('/onboarding');
+      return;
+    }
+    setAuthToken(token);
+  }, [router]);
+
+  const fetchCart = useCallback(async (token: string) => {
+    const res = await fetch('/api/cart', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.status === 401) {
+      localStorage.removeItem('authToken');
+      router.push('/onboarding');
+      return;
+    }
+
     const data = await res.json();
     setItems(data.items ?? []);
     setSummary(data.summary ?? null);
     setLoading(false);
-  }
+  }, [router]);
 
   useEffect(() => {
-    fetchCart();
-  }, []);
+    if (authToken) {
+      fetchCart(authToken);
+    }
+  }, [authToken, fetchCart]);
 
-  async function handleRemove(productId: string, size: string, colorHex: string) {
+  const handleRemove = async (productId: string, size: string, colorHex: string) => {
+    if (!authToken) return;
+
     await fetch('/api/cart', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
       body: JSON.stringify({ productId, size, colorHex }),
     });
-    fetchCart();
-  }
+    await fetchCart(authToken);
+  };
 
   if (loading) {
     return (

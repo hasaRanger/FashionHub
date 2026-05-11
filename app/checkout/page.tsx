@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { ChevronLeft, Clock } from 'lucide-react';
 import { CartSummary, Order } from '@/types';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
 const PAYMENT_METHODS = [
-  { label: 'Visa',    bg: '#1A1F71', text: '#FFFFFF', short: 'VISA' },
-  { label: 'Amex',   bg: '#007BC1', text: '#FFFFFF', short: 'AMEX' },
-  { label: 'Master', bg: '#EB001B', text: '#FFFFFF', short: 'MC'   },
-  { label: 'PayPal', bg: '#003087', text: '#009CDE', short: 'PP'   },
-  { label: 'Apple',  bg: '#000000', text: '#FFFFFF', short: '🍎'   },
+  { label: 'Visa', logo: '/logos/visa.png' },
+  { label: 'Amex', logo: '/logos/amex.png' },
+  { label: 'Mastercard', logo: '/logos/mastercard.png' },
+  { label: 'PayPal', logo: '/logos/paypal.png' },
+  { label: 'Apple Pay', logo: '/logos/apple-pay.png' },
 ];
 
 export default function CheckoutPage() {
@@ -22,17 +23,45 @@ export default function CheckoutPage() {
   const [voucher, setVoucher] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [order, setOrder] = useState<Order | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/cart')
-      .then((r) => r.json())
-      .then((data) => setSummary(data.summary ?? null));
-  }, []);
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      router.push('/onboarding');
+      return;
+    }
+    setAuthToken(token);
+  }, [router]);
+
+  useEffect(() => {
+    if (!authToken) return;
+
+    fetch('/api/cart', {
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+      .then((r) => {
+        if (r.status === 401) {
+          localStorage.removeItem('authToken');
+          router.push('/onboarding');
+          return;
+        }
+        return r.json();
+      })
+      .then((data) => {
+        if (data) setSummary(data.summary ?? null);
+      });
+  }, [authToken, router]);
 
   async function handlePayNow() {
+    if (!authToken) return;
+
     setStatus('loading');
 
-    const res = await fetch('/api/orders', { method: 'POST' });
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
 
     if (res.ok) {
       const data: Order = await res.json();
@@ -96,7 +125,7 @@ export default function CheckoutPage() {
                 <p className="text-sm font-bold text-gray-900 leading-snug">
                   25/3 Housing Estate,
                 </p>
-                <p className="text-sm font-bold text-gray-900">Sylhet</p>
+                <p className="text-sm font-bold text-gray-900">LA, California</p>
               </div>
             </div>
             <button className="text-xs text-gray-400 font-medium hover:text-gray-700">
@@ -117,17 +146,19 @@ export default function CheckoutPage() {
               <button
                 key={method.label}
                 onClick={() => setSelectedPayment(method.label)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                className={`px-4 py-3 rounded-lg transition-all border bg-white ${
                   selectedPayment === method.label
                     ? 'border-brand ring-1 ring-brand'
                     : 'border-gray-200'
                 }`}
-                style={{
-                  backgroundColor: method.bg,
-                  color: method.text,
-                }}
               >
-                {method.short}
+                <Image
+                  src={method.logo}
+                  alt={method.label}
+                  width={40}
+                  height={24}
+                  className="h-6 object-contain"
+                />
               </button>
             ))}
           </div>

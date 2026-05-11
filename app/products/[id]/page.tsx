@@ -37,9 +37,18 @@ export default function ProductDetailsPage({
     if (!product || !selectedColor) return;
     setStatus('loading');
 
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setStatus('error');
+      return;
+    }
+
     const res = await fetch('/api/cart', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
         productId: product.id,
         name: product.name,
@@ -113,7 +122,7 @@ export default function ProductDetailsPage({
 
       <div className="flex-1 px-5 pt-5 pb-28">
         <div className="flex items-start justify-between">
-          <h1 className="text-xl font-bold text-gray-900 leading-snug max-w-[60%]">
+          <h1 className="text-2xl font-bold text-gray-900 leading-snug max-w-[60%]">
             {product.name}
           </h1>
           <ColorSwatch

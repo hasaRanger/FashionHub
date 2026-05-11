@@ -7,7 +7,20 @@ export const MOCK_USER = {
   id: MOCK_USER_ID,
   name: 'Test User',
   email: 'test@fashionhub.dev',
+  username: 'testuser',
+  password: 'password123',
 };
+
+// Test user credentials for login
+export const TEST_USERS = [
+  {
+    id: MOCK_USER_ID,
+    name: 'Test User',
+    email: 'test@fashionhub.dev',
+    username: 'testuser',
+    password: 'password123',
+  },
+];
 
 // Delivery constants 
 
