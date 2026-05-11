@@ -1,5 +1,9 @@
 # FashionHub
 
+<p>
+    <img src='./public/favicon.png' alt='favicon'>
+</p>
+
 A mobile-first e-commerce app built with Next.js, TypeScript, and Tailwind CSS v4.
 
 ## Stack
