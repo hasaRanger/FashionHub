@@ -79,18 +79,8 @@ export default function ProductDetailsPage({
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <div className="relative">
-        <div className="relative w-full aspect-[4/5] rounded-b-[2rem] overflow-hidden bg-gray-100">
-          <Image
-            src={product.images[activeImage] ?? product.images[0]}
-            alt={product.name}
-            fill
-            className="object-cover object-top"
-            priority
-          />
-        </div>
-
-        <div className="absolute top-5 left-4 right-4 flex items-center justify-between">
+      <div className="px-5 pt-5">
+        <div className="flex items-center justify-between">
           <button
             onClick={() => router.back()}
             className="w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm"
@@ -102,22 +92,34 @@ export default function ProductDetailsPage({
             <Bookmark size={18} className="text-gray-800" strokeWidth={1.8} />
           </button>
         </div>
+      </div>
 
-        {product.images.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {product.images.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveImage(i)}
-                className={`rounded-full transition-all ${
-                  i === activeImage
-                    ? 'w-4 h-1.5 bg-gray-800'
-                    : 'w-1.5 h-1.5 bg-gray-300'
-                }`}
-              />
-            ))}
-          </div>
-        )}
+      <div className="px-5 py-4">
+        <div className="relative w-full aspect-[4/5] rounded-4xl overflow-hidden bg-gray-100">
+          <Image
+            src={product.images[activeImage] ?? product.images[0]}
+            alt={product.name}
+            fill
+            className="object-cover object-top"
+            priority
+          />
+
+          {product.images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+              {product.images.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImage(i)}
+                  className={`rounded-full transition-all ${
+                    i === activeImage
+                      ? 'w-4 h-1.5 bg-gray-800'
+                      : 'w-1.5 h-1.5 bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 px-5 pt-5 pb-28">

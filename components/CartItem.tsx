@@ -37,14 +37,14 @@ export default function CartItem({ item, onRemove }: Props) {
             aria-label="Save for later"
             className="w-8 h-8 flex items-center justify-center"
           >
-            <Heart size={16} className="text-white" strokeWidth={1.8} />
+            <Heart size={16} className="text-white hover:text-black" strokeWidth={1.8} />
           </button>
           <button
             aria-label="Remove item"
             onClick={() => onRemove(item.productId, item.size, item.color.hex)}
             className="w-8 h-8 flex items-center justify-center"
           >
-            <Trash2 size={16} className="text-white" strokeWidth={1.8} />
+            <Trash2 size={16} className="text-white hover:text-black" strokeWidth={1.8} />
           </button>
         </div>
         <span className="text-sm font-semibold text-gray-700">{item.quantity}x</span>
