@@ -8,7 +8,7 @@ A mobile-first e-commerce app built with Next.js, TypeScript, and Tailwind CSS v
 
 ## Stack
 
-- **Next.js 15** (App Router)
+- **Next.js 16** (App Router)
 - **TypeScript**
 - **Tailwind CSS v4**
 - **lucide-react** for icons
@@ -118,6 +118,7 @@ Due to project timeline constraints, the following features remain unimplemented
 
 ## Decisions & Shortcuts
 
+- **Edge-level route protection** — uses `proxy.ts` (Next.js 16) to intercept requests at the edge, blocking unauthorized access before pages/APIs execute.
 - **In-memory store** — used instead of a database as permitted by the spec. Data resets on server restart.
 - **Mock auth** — a seeded test user with Bearer tokens. No session or OAuth needed per spec.
 - **Imprima font** — single-weight Google Font matching the mockup's clean aesthetic.

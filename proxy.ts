@@ -18,7 +18,7 @@ function getTokenFromRequest(request: NextRequest): string | null {
   return token || null;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Check if the route is protected
